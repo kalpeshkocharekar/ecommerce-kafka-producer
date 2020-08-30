@@ -18,6 +18,23 @@ libraryDependencies += "org.apache.spark" %% "spark-streaming" % "2.4.5"
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.5"
 // https://mvnrepository.com/artifact/org.apache.spark/spark-sql-kafka-0-10
 libraryDependencies += "org.apache.spark" %% "spark-sql-kafka-0-10" % "2.4.5"
+// https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-scala
+libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.5"
+dependencyOverrides ++= {
+  Seq(
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.6.7.1",
+    "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.7",
+    "com.fasterxml.jackson.core" % "jackson-core" % "2.6.7"
+  )
+}
+
+resolvers += Resolver.url("bintray-sbt-plugins", url("https://dl.bintray.com/eed3si9n/sbt-plugins/"))(Resolver.ivyStylePatterns)
+resolvers += Resolver.bintrayIvyRepo("com.eed3si9n", "sbt-plugins")
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
 
 
 
