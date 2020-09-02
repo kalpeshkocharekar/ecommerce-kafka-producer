@@ -15,3 +15,5 @@ customer_id:customer_name:customer_mail_id
 Joined_df:
 
 customer_id:customer_name:sum(Amount):max(product_category)
+
+![architecture](https://user-images.githubusercontent.com/46211420/91979318-35d58980-ed43-11ea-9a0f-00cbd799642e.jpeg)
