@@ -27,12 +27,14 @@ object recordproducer {
       val producer = new KafkaProducer[String, String](props)
       val jsonstring =
         s"""{
-           | "id": "0001",
-           | "name": "Peter"
+           | "order_id": "0001",
+           | "product_id": "Peter"
+           |  "customer_id": "Peter"
+           |   "quantity": "Peter"
            |}
          """.stripMargin
 
-      val record = new ProducerRecord[String, String](topic, "key", jsonstring)
+      val record = new ProducerRecord[String, String](topic, "testtable", jsonstring)
       producer.send(record)
       producer.close()
       println(producer)

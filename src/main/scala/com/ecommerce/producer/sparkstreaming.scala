@@ -1,7 +1,10 @@
 package com.ecommerce.producer
 
+import com.ecommerce.producer.sparkrecevier.{inputtopic, kafkabroker}
 import com.typesafe.scalalogging.Logger
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions.{col, from_json}
+import org.apache.spark.sql.types.{StringType, StructType}
 import org.slf4j.LoggerFactory
 
 import scala.util.Properties
@@ -21,8 +24,26 @@ object sparkstreaming {
 
       spark.sparkContext.setLogLevel("ERROR")
 
-      val a =spark.read.parquet("/home/kalpesh/Downloads/casadimension.parquet")
-      a.printSchema()
+
+    println("starting spark streaming job")
+    val df = spark
+      .readStream
+      .format("kafka")
+      .option("kafka.bootstrap.servers", kafkabroker)
+      .option("subscribe", inputtopic)
+      .load()
+
+    val data_Schema: StructType = new StructType()
+      .add("id", StringType)
+      .add("name", StringType)
+
+    val jsondf =  df.select(col("key").cast("String"),col("value").cast("String"))
+      .withColumn("value",from_json(col("value"),data_Schema))
+    val finaldf  = jsondf.select(col("key"),col("value.*"))
+    finaldf.writeStream
+      .format("console")
+      .start()
+      .awaitTermination()
 
     }
 
