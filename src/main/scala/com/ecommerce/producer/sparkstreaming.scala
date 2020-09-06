@@ -39,15 +39,12 @@ object sparkstreaming {
       .add("product_id", StringType)
       .add("customer_id", StringType)
       .add("quantity", StringType)
-    //      val data_Schema: StructType = new StructType()
-    //        .add("order_id", StringType)
-    //        .add("product_id", StringType)
-    //        .add("customer_id",StringType)
-    //        .add("quantity",StringType)
 
 
-    val jsondf = df.select(col("key").cast("String"), col("value"))
-      .withColumn("value", from_json(col("value").cast("String"), data_Schema))
+
+    val jsondf = df.
+      select(col("key").cast("String"), col("value").cast("String"))
+      .withColumn("value", from_json(col("value"), data_Schema))
 
     val finaldf = jsondf.select(col("key"), col("value.*"))
 

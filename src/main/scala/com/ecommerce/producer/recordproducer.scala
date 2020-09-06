@@ -15,7 +15,7 @@ object recordproducer {
   def main(args: Array[String]): Unit = {
     while (true) {
       writeToKafka("producttopic")
-      Thread.sleep(5000)
+      Thread.sleep(5000) // in milliseconds
     }
   }
 
@@ -27,27 +27,31 @@ object recordproducer {
       props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
       props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
       val producer = new KafkaProducer[String, String](props)
+
+      //generates random value between 1 to 20
       val start = 1
       val end = 20
       val rnd = new scala.util.Random
       val random_customer_id = start + rnd.nextInt((end - start) + 1)
       val random_product_id = start + rnd.nextInt((end - start) + 1)
+
+      //generates random value between 1 to 5
       val start_quantity = 1
       val end_quantity = 5
       val random_quantity = start + rnd.nextInt((end_quantity - start_quantity) + 1)
 
-            val jsonstring =
-              s"""{
-                 | "order_id": "${randomUUID().toString()}",
-                 | "product_id": "${random_product_id.toString()}",
-                 |  "customer_id": "${random_customer_id.toString() }",
-                 |   "quantity": "${random_quantity.toString()}"
-                 |}
-               """.stripMargin
+      val jsonstring =
+        s"""{
+           | "order_id": "${randomUUID().toString()}",
+           | "product_id": "${random_product_id.toString()}",
+           |  "customer_id": "${random_customer_id.toString()}",
+           |   "quantity": "${random_quantity.toString()}"
+           |}
+         """.stripMargin
 
 
       print(jsonstring)
-      val record = new ProducerRecord[String, String](topic, "testtable", jsonstring)
+      val record = new ProducerRecord[String, String](topic, "orderdetails", jsonstring)
       producer.send(record)
       producer.close()
       println(producer)
