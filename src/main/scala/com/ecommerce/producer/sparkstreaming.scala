@@ -46,7 +46,7 @@ object sparkstreaming {
       select(col("key").cast("String"), col("value").cast("String"))
       .withColumn("value", from_json(col("value"), data_Schema))
 
-    val finaldf = jsondf.select(col("key"), col("value.*"))
+    val finaldf = jsondf.select(col("value.*"))
 
     val typecastdf = finaldf
       .withColumn("product_id", col("product_id").cast("Integer"))
@@ -54,17 +54,33 @@ object sparkstreaming {
       .withColumn("quantity", col("quantity").cast("Integer"))
 
     typecastdf.printSchema()
+
+    val customertabledf = spark.read
+      .format("jdbc")
+      .option("driver","org.sqlite.JDBC")
+      .option("dbtable","customers")
+      .option("url","jdbc:sqlite:/home/kalpesh/IdeaProjects/ecommerce-kafka-producer/devdb.sqlite")
+      .load()
+    customertabledf.printSchema()
 //
-//    val customertabledf = spark.read
-//      .format("jdbc")
-//      .option("driver","org.sqlite.JDBC")
-//      .option("dbtable","testtable")
-//      .option("url","/home/kalpesh/IdeaProjects/ecommerce-kafka-producer/devdb.sqlite")
-//      .load()
+//    val jdcustomertabledfbcDF = spark.read.format("jdbc").options(
+//      Map("url" -> jdbcSqlConn,
+//        "driver" -> "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+//        "dbtable" -> "***")).load()
+
+    val productsdf =  spark.read
+      .format("jdbc")
+      .option("driver","org.sqlite.JDBC")
+      .option("dbtable","products")
+      .option("url","jdbc:sqlite:/home/kalpesh/IdeaProjects/ecommerce-kafka-producer/devdb.sqlite")
+      .load()
+
+    val joineddf = customertabledf.join(typecastdf,typecastdf("customer_id") === customertabledf("customer_id"))
+      .join(productsdf,typecastdf("product_id")===productsdf("product_id"))
+
+
 //
-//    val joineddf = customertabledf.join(typecastdf,col("id"))
-//
-    typecastdf.writeStream
+    joineddf.writeStream
       .format("console")
       .start()
       .awaitTermination()
