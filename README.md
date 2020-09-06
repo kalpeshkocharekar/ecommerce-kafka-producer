@@ -1,9 +1,19 @@
 # ecommerce-kafka-producer
 A scala producer to continously push data to kafka topics simulateneously
 
+Topic schema and table Schema:
 
-Docker Kafka and Zookeeper Reference:
-https://github.com/confluentinc/cp-all-in-one/blob/5.5.1-post/cp-all-in-one/docker-compose.yml
+order details:
+order_id:product_id:customer_id:quantity
 
-sbt assembly issue:
-https://github.com/sbt/sbt-assembly/issues/239
+product_details:
+product_id:Product_price:product_category
+
+Customer_details:
+customer_id:customer_name:customer_mail_id
+
+Joined_df:
+
+customer_id:customer_name:sum(Amount):max(product_category)
+
+![architecture](https://user-images.githubusercontent.com/46211420/91979318-35d58980-ed43-11ea-9a0f-00cbd799642e.jpeg)
